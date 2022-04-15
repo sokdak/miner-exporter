@@ -6,6 +6,7 @@ import (
 	"github.com/go-logr/zapr"
 	"github.com/sokdak/miner-exporter/pkg/common"
 	"github.com/sokdak/miner-exporter/pkg/gminer"
+	"github.com/sokdak/miner-exporter/pkg/trex"
 	"go.uber.org/zap"
 	"net/http"
 	"os"
@@ -42,6 +43,14 @@ func SetMinerInstanceOrDie(minerType string, protocol string, host string, port 
 	case common.MinerTypeGMiner:
 		miner = gminer.Client{
 			Log:            log.WithName("gminer"),
+			ConnectionInfo: connInfo,
+			HttpClient: http.Client{
+				Timeout: ScrapeTimeout,
+			},
+		}
+	case common.MinerTypeTrexMiner:
+		miner = trex.Client{
+			Log:            log.WithName("trex"),
 			ConnectionInfo: connInfo,
 			HttpClient: http.Client{
 				Timeout: ScrapeTimeout,
