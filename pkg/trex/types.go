@@ -20,6 +20,7 @@ type Pool struct {
 	Retries int    `json:"retries"`
 	Url     string `json:"url"`
 	User    string `json:"user"`
+	Worker  string `json:"worker"`
 }
 
 type Gpu struct {

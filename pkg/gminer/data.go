@@ -8,6 +8,7 @@ import (
 	"github.com/sokdak/miner-exporter/pkg/dto"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 func (c Client) Fetch() (interface{}, error) {
@@ -39,11 +40,13 @@ func (c Client) Parse(value interface{}) (*dto.Status, error) {
 
 	commonStatus := dto.Status{
 		Miner: dto.Miner{
-			Name:      "GMiner",
-			Algorithm: status.Algorithm,
-			Address:   status.User,
-			Pool:      status.Server,
+			Name:      getName(status.Miner),
+			Version:   getVersion(status.Miner),
+			Algorithm: common.GeneralizeAlgorithm(status.Algorithm),
+			Address:   common.ExtractAddress(status.User),
+			Pool:      common.GeneralizePoolAddress(status.Server),
 			Uptime:    status.Uptime,
+			Worker:    common.ExtractWorkerNameFromAddress(status.User),
 		},
 		Devices: func() []dto.Device {
 			devices := make([]dto.Device, 0)
@@ -65,4 +68,12 @@ func (c Client) Parse(value interface{}) (*dto.Status, error) {
 		}(),
 	}
 	return &commonStatus, nil
+}
+
+func getVersion(a string) string {
+	return strings.Split(a, " ")[1]
+}
+
+func getName(a string) string {
+	return strings.Split(a, " ")[0]
 }

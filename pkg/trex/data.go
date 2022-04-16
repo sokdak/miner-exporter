@@ -41,10 +41,11 @@ func (c Client) Parse(value interface{}) (*dto.Status, error) {
 		Miner: dto.Miner{
 			Name:      summary.Name,
 			Version:   summary.Version,
-			Algorithm: summary.Algorithm,
+			Algorithm: common.GeneralizeAlgorithm(summary.Algorithm),
 			Address:   summary.ActivePool.User,
-			Pool:      summary.ActivePool.Url,
+			Pool:      common.GeneralizePoolAddress(summary.ActivePool.Url),
 			Uptime:    summary.Uptime,
+			Worker:    summary.ActivePool.Worker,
 		},
 		Devices: func() []dto.Device {
 			devs := make([]dto.Device, 0)

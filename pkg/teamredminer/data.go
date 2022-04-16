@@ -54,10 +54,11 @@ func (c Client) Parse(value interface{}) (*dto.Status, error) {
 		Miner: dto.Miner{
 			Name:      report.Version.Miner,
 			Version:   report.Stat.Generic().MinerVersion,
-			Algorithm: "Ethash",
-			Address:   report.Pools[0].User,
-			Pool:      report.Pools[0].URL,
+			Algorithm: common.GeneralizeAlgorithm("ethash"),
+			Address:   common.ExtractAddress(report.Pools[0].User),
+			Pool:      common.GeneralizePoolAddress(report.Pools[0].URL),
 			Uptime:    int(report.Stat.Generic().Elapsed),
+			Worker:    common.ExtractWorkerNameFromAddress(report.Pools[0].User),
 		},
 		Devices: func() []dto.Device {
 			devs := make([]dto.Device, 0)

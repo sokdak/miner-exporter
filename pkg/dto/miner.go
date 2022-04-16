@@ -7,4 +7,5 @@ type Miner struct {
 	Address   string `json:"address"`
 	Pool      string `json:"pool"`
 	Uptime    int    `json:"uptime"`
+	Worker    string `json:"worker"`
 }

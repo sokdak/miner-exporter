@@ -15,6 +15,7 @@ type Device struct {
 }
 
 type Stat struct {
+	Miner     string   `json:"miner"`
 	Uptime    int      `json:"uptime"`
 	Server    string   `json:"server"`
 	User      string   `json:"user"`
