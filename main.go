@@ -3,8 +3,10 @@ package main
 import (
 	"flag"
 	"github.com/gin-gonic/gin"
+	"github.com/sokdak/miner-exporter/pkg/common"
 	"github.com/sokdak/miner-exporter/pkg/metric"
 	"os"
+	"time"
 )
 
 func main() {
@@ -19,8 +21,16 @@ func main() {
 	flag.Parse()
 
 	glog := metric.GetLoggerOrDie()
-	metric.SetMinerInstanceOrDie(minerType, protocol, host, port, glog)
 	metric.SetLoggerForMetricHandler(glog)
+
+	for retry := 0; retry < common.InitRetryThreshold; retry++ {
+		err := metric.SetMinerInstanceOrDie(minerType, protocol, host, port, glog)
+		if err != nil {
+			glog.Error(err, "SetMinerInstance has been failed, retrying..", "retry", retry, "retry-threshold", common.InitRetryThreshold)
+			time.Sleep(common.InitRetryBackoff)
+			continue
+		}
+	}
 
 	log := glog.WithName("main")
 	log.Info("starting miner-exporter")

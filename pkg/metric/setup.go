@@ -32,7 +32,7 @@ func SetLoggerForMetricHandler(log logr.Logger) {
 	_logger = log.WithName("exporter")
 }
 
-func SetMinerInstanceOrDie(minerType string, protocol string, host string, port int, log logr.Logger) {
+func SetMinerInstanceOrDie(minerType string, protocol string, host string, port int, log logr.Logger) error {
 	logInit := log.WithName("init")
 	connInfo := common.ConnectionInfo{
 		Protocol: protocol,
@@ -73,13 +73,14 @@ func SetMinerInstanceOrDie(minerType string, protocol string, host string, port 
 	if err := miner.Init(); err != nil {
 		logInit.WithValues("miner-type", minerType,
 			"connection-url", common.GetConnectionString(connInfo)).Error(err, "failed to init miner")
-		os.Exit(1)
+		return err
 	}
 	if err := miner.Ping(); err != nil {
 		logInit.WithValues("miner-type", minerType,
 			"connection-url", common.GetConnectionString(connInfo)).Error(err, "failed to ping miner")
-		os.Exit(1)
+		return err
 	}
 
 	_miner = miner
+	return nil
 }
