@@ -6,6 +6,7 @@ import (
 	"github.com/sokdak/miner-exporter/pkg/common"
 	"github.com/sokdak/miner-exporter/pkg/dto"
 	"math"
+	"strings"
 )
 
 func (c Client) Fetch() (interface{}, error) {
@@ -52,8 +53,8 @@ func (c Client) Parse(value interface{}) (*dto.Status, error) {
 	}
 	commonStatus := dto.Status{
 		Miner: dto.Miner{
-			Name:      report.Version.Miner,
-			Version:   report.Stat.Generic().MinerVersion,
+			Name:      extractName(report.Version.Miner),
+			Version:   extractVersionFromName(report.Version.Miner),
 			Algorithm: common.GeneralizeAlgorithm("ethash"),
 			Address:   common.ExtractAddress(report.Pools[0].User),
 			Pool:      common.GeneralizePoolAddress(report.Pools[0].URL),
@@ -80,4 +81,16 @@ func (c Client) Parse(value interface{}) (*dto.Status, error) {
 		}(),
 	}
 	return &commonStatus, nil
+}
+
+func extractName(source string) string {
+	return strings.Split(source, " ")[0]
+}
+
+func extractVersionFromName(source string) string {
+	strs := strings.Split(source, " ")
+	if len(strs) < 2 {
+		return source
+	}
+	return strs[1]
 }
