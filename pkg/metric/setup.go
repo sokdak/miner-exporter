@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"github.com/go-logr/logr"
 	"github.com/go-logr/zapr"
+	cgminer "github.com/sokdak/go-teamredminer-api"
 	"github.com/sokdak/miner-exporter/pkg/common"
 	"github.com/sokdak/miner-exporter/pkg/gminer"
+	"github.com/sokdak/miner-exporter/pkg/teamredminer"
 	"github.com/sokdak/miner-exporter/pkg/trex"
 	"go.uber.org/zap"
 	"net/http"
@@ -55,6 +57,12 @@ func SetMinerInstanceOrDie(minerType string, protocol string, host string, port 
 			HttpClient: http.Client{
 				Timeout: ScrapeTimeout,
 			},
+		}
+	case common.MinerTypeTeamRedMiner:
+		miner = teamredminer.Client{
+			Log:            log.WithName("teamredminer"),
+			ConnectionInfo: connInfo,
+			Client:         cgminer.NewCGMiner(connInfo.Host, connInfo.Port, ScrapeTimeout),
 		}
 	default:
 		logInit.WithValues("miner-type", minerType,

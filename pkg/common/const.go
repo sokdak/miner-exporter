@@ -2,7 +2,7 @@ package common
 
 const (
 	MinerTypeGMiner       = "gminer"
-	MinerTypeTeamRedMiner = "tredminer"
+	MinerTypeTeamRedMiner = "teamredminer"
 	MinerTypeTrexMiner    = "trex"
 
 	ChainContextKeyMiner = "ChainContextKeyMiner"

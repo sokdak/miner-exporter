@@ -10,5 +10,12 @@ func GetConnectionString(connInfo ConnectionInfo) string {
 }
 
 func GeneralizeGpuName(name string) string {
-	return strings.Trim(strings.Replace(name, "RTX", "", -1), " ")
+	// replace RTX to none
+	name = strings.Replace(name, "RTX", "", -1)
+	// replace Radeon to none
+	name = strings.Replace(name, "Radeon", "", -1)
+	// replace RX to none
+	name = strings.Replace(name, "RX", "", -1)
+
+	return strings.Trim(name, " ")
 }

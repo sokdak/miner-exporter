@@ -7,6 +7,7 @@ require (
 	github.com/go-logr/logr v1.2.2
 	github.com/go-logr/zapr v1.2.3
 	github.com/pkg/errors v0.9.1
+	github.com/sokdak/go-teamredminer-api v1.2.6
 	go.uber.org/zap v1.19.0
 )
 
