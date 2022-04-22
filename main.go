@@ -21,19 +21,25 @@ func main() {
 	flag.Parse()
 
 	glog := metric.GetLoggerOrDie()
-	metric.SetLoggerForMetricHandler(glog)
+	log := glog.WithName("main")
+	log.Info("starting miner-exporter")
 
+	var err error
 	for retry := 0; retry < common.InitRetryThreshold; retry++ {
-		err := metric.SetMinerInstanceOrDie(minerType, protocol, host, port, glog)
+		err = metric.SetMinerInstanceOrDie(minerType, protocol, host, port, glog)
 		if err != nil {
 			glog.Error(err, "SetMinerInstance has been failed, retrying..", "retry", retry, "retry-threshold", common.InitRetryThreshold)
 			time.Sleep(common.InitRetryBackoff)
-			continue
 		}
 	}
 
-	log := glog.WithName("main")
-	log.Info("starting miner-exporter")
+	if err != nil {
+		glog.Error(err, "failed get miner instance, exit miner.")
+		os.Exit(1)
+	}
+
+	metric.SetLoggerForMetricHandler(glog)
+	gin.SetMode(gin.ReleaseMode)
 	g := gin.Default()
 	g.GET("/metrics", metric.HandleExportMetric)
 	if err := g.Run(":12000"); err != nil {
