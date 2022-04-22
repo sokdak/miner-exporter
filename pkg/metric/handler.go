@@ -25,5 +25,5 @@ func HandleExportMetric(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, status)
+	c.JSON(http.StatusOK, status)
 }
