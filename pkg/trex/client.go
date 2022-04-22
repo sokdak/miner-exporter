@@ -24,7 +24,7 @@ func (c Client) Ping() error {
 
 func (c Client) Init() error {
 	// verify connection info
-	_, err := c.HttpClient.Head(fmt.Sprintf("%s/%s", common.GetConnectionString(c.ConnectionInfo), MinerHttpSummaryUrl))
+	_, err := c.HttpClient.Get(fmt.Sprintf("%s%s", common.GetConnectionString(c.ConnectionInfo), MinerHttpSummaryUrl))
 	if err != nil {
 		return errors.Wrapf(err, "failed to get response from endpoint")
 	}
