@@ -7,6 +7,6 @@ const (
 	MinerTypeTeamRedMiner = "teamredminer"
 	MinerTypeTrexMiner    = "trex"
 
-	InitRetryBackoff   = 10 * time.Second
-	InitRetryThreshold = 60
+	InitRetryBackoff   = 30 * time.Second
+	InitRetryThreshold = 120
 )
