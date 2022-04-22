@@ -16,6 +16,8 @@ func GeneralizeGpuName(name string) string {
 	name = strings.Replace(name, "Radeon", "", -1)
 	// replace RX to none
 	name = strings.Replace(name, "RX", "", -1)
+	// replace whitespace to none
+	name = strings.Replace(name, " ", "", -1)
 
 	return strings.Trim(name, " ")
 }
