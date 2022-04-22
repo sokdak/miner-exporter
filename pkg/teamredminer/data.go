@@ -51,6 +51,11 @@ func (c Client) Parse(value interface{}) (*dto.Status, error) {
 	if !ok {
 		return nil, fmt.Errorf("failed to parse tredminer response dto")
 	}
+
+	if common.ExtractWorkerNameFromAddress(report.Pools[0].User) == "" {
+		return nil, fmt.Errorf("failed to get worker name")
+	}
+
 	commonStatus := dto.Status{
 		Miner: dto.Miner{
 			Name:      extractName(report.Version.Miner),

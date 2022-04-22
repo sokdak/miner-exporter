@@ -38,6 +38,10 @@ func (c Client) Parse(value interface{}) (*dto.Status, error) {
 		return nil, fmt.Errorf("failed to parse gminer response dto")
 	}
 
+	if common.ExtractWorkerNameFromAddress(status.User) == "" {
+		return nil, fmt.Errorf("failed to get worker name")
+	}
+
 	commonStatus := dto.Status{
 		Miner: dto.Miner{
 			Name:      getName(status.Miner),

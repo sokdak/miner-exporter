@@ -37,6 +37,10 @@ func (c Client) Parse(value interface{}) (*dto.Status, error) {
 		return nil, fmt.Errorf("failed to parse trex response dto")
 	}
 
+	for summary.ActivePool.Worker == "" {
+		return nil, fmt.Errorf("failed to get worker name")
+	}
+
 	commonStatus := dto.Status{
 		Miner: dto.Miner{
 			Name:      summary.Name,
