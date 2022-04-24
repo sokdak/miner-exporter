@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/go-logr/logr"
 	"github.com/go-logr/zapr"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	cgminer "github.com/sokdak/go-teamredminer-api"
 	"github.com/sokdak/miner-exporter/pkg/common"
 	"github.com/sokdak/miner-exporter/pkg/gminer"
@@ -84,4 +86,19 @@ func SetMinerInstanceOrDie(minerType string, protocol string, host string, port 
 	logInit.Info("successfully initialized", "connection-url", common.GetConnectionString(connInfo))
 	_miner = miner
 	return nil
+}
+
+func GetAndSetupHandler(format string, log logr.Logger) (http.Handler, error) {
+	var h http.Handler
+	switch format {
+	case "json":
+		h = new(JsonHandler)
+	case "prometheus":
+		// register metrics to prometheus client
+		prometheus.MustRegister(NewMinerMetric(log))
+		h = promhttp.Handler()
+	default:
+		return nil, fmt.Errorf("failed to get handler, handler not supported: %s", format)
+	}
+	return h, nil
 }
