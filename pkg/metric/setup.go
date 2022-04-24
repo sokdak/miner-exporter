@@ -81,6 +81,7 @@ func SetMinerInstanceOrDie(minerType string, protocol string, host string, port 
 		return err
 	}
 
+	logInit.WithValues("successfully initialized", "connection-url", common.GetConnectionString(connInfo))
 	_miner = miner
 	return nil
 }
