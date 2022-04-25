@@ -207,15 +207,9 @@ func (c *MinerCollector) Collect(ch chan<- prometheus.Metric) {
 			metric.Labels(status)...)
 	}
 
-	// unpacking gpu_ids
-	gpuIndices := make([]int, 0)
-	for _, gpu := range status.Devices {
-		gpuIndices = append(gpuIndices, gpu.GpuId)
-	}
-
 	// set gpu metrics
 	for _, metric := range c.metricsGpu {
-		for _, i := range gpuIndices {
+		for i := range status.Devices {
 			ch <- prometheus.MustNewConstMetric(
 				metric.Desc,
 				metric.Type,
