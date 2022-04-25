@@ -4,12 +4,16 @@
 There are too many mining software and different apis, and it makes hard to metrify if different mining software used in mixed.
 `miner-exporter` helps to collect mining statistics from each miner's api and provide as generalized form.
 
+## Supported output format
+- Prometheus (use `--output-format=prometheus` to enable)
+- JSON
+
 ## Supported Miners
 - GMiner (https://github.com/develsoftware/GMinerRelease)
 - T-Rex (https://github.com/trexminer/T-Rex)
 - Team Red Miner (https://github.com/todxx/teamredminer)
 
-## Exported model
+## Exported model (JSON)
 ```
 {
   "miner": {
@@ -23,7 +27,7 @@ There are too many mining software and different apis, and it makes hard to metr
   },
   "devices": [{
     "gpu_id": 0,
-    "name": "Vega 20 [Radeon VII]",
+    "name": "Vega20[VII]",
     "hashrate": 101780000,
     "fan_speed": 97,
     "core_temp": 52,
@@ -34,7 +38,7 @@ There are too many mining software and different apis, and it makes hard to metr
     "share_stale": 0
   }, {
     "gpu_id": 1,
-    "name": "Vega 20 [Radeon VII]",
+    "name": "Vega20[VII]",
     "hashrate": 102910000,
     "fan_speed": 97,
     "core_temp": 55,
@@ -55,7 +59,7 @@ $ env GOOS={your-os} GOARCH={your-arch} go build
 
 ## Run
 ```
-$ miner-exporter --miner-type={gminer/trex/teamredminer} --host={your-miner-host} --protocol={http/https/tcp}
+$ miner-exporter --miner-type={gminer/trex/teamredminer} --miner-host={your-miner-host} --miner-protocol={http/https/tcp} --miner-port={your-miner-port} --listen-port={port-to-listen} --output-format={json/prometheus}
 ```
 
 ## Contribution
