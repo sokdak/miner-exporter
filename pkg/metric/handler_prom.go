@@ -146,6 +146,20 @@ func NewMinerMetric(log logr.Logger) *MinerCollector {
 				},
 				Labels: defaultMinerGpuMetricLabelValueGenerator,
 			},
+			{
+				Type: prometheus.GaugeValue,
+				Desc: prometheus.NewDesc(
+					prometheus.BuildFQName(namespace, subsystemForGpu, "lhr_tune"),
+					"lhr tune",
+					defaultMinerGpuMetricLabels, nil),
+				Value: func(m *dto.Status, id int) float64 {
+					if m.Devices[id].LhrRate != 0 {
+						return float64(m.Devices[id].LhrRate)
+					}
+					return -1
+				},
+				Labels: defaultMinerGpuMetricLabelValueGenerator,
+			},
 		},
 		metricsMiner: []*MinerMetric{
 			{

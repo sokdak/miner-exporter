@@ -65,6 +65,7 @@ func (c Client) Parse(value interface{}) (*dto.Status, error) {
 					ShareAccepted:    dev.Shares.AcceptedCount,
 					ShareRejected:    dev.Shares.RejectedCount,
 					ShareStale:       dev.Shares.InvalidCount,
+					LhrRate:          dev.LhrTune,
 				})
 			}
 			return devs
