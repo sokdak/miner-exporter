@@ -6,6 +6,7 @@ import (
 	"github.com/sokdak/miner-exporter/pkg/common"
 	"github.com/sokdak/miner-exporter/pkg/dto"
 	"math"
+	"regexp"
 	"strings"
 )
 
@@ -71,7 +72,7 @@ func (c Client) Parse(value interface{}) (*dto.Status, error) {
 			for i, dev := range *report.Devices {
 				devs = append(devs, dto.Device{
 					GpuId:            report.DeviceDetails[i].Id,
-					Name:             common.GeneralizeGpuName(report.DeviceDetails[i].Model),
+					Name:             common.GeneralizeGpuName(cropGpuModel(report.DeviceDetails[i].Model)),
 					Hashrate:         int(math.Floor(dev.MHS30s * 1000 * 1000)),
 					FanSpeed:         int(dev.FanPercent),
 					CoreTemp:         int(dev.Temperature),
@@ -98,4 +99,12 @@ func extractVersionFromName(source string) string {
 		return source
 	}
 	return strs[1]
+}
+
+func cropGpuModel(trmDevModel string) string {
+	r, _ := regexp.Compile("(\\[.+\\]|RX \\d+( XT|))")
+	if r.MatchString(trmDevModel) {
+		return strings.ReplaceAll(strings.ReplaceAll(r.FindString(trmDevModel), "[", ""), "]", "")
+	}
+	return trmDevModel
 }
