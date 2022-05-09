@@ -12,6 +12,7 @@ There are too many mining software and different apis, and it makes hard to metr
 - GMiner (https://github.com/develsoftware/GMinerRelease)
 - T-Rex (https://github.com/trexminer/T-Rex)
 - Team Red Miner (https://github.com/todxx/teamredminer)
+- NBMiner (https://github.com/NebuTech/NBMiner)
 
 ## Exported model (JSON)
 ```
@@ -27,7 +28,7 @@ There are too many mining software and different apis, and it makes hard to metr
   },
   "devices": [{
     "gpu_id": 0,
-    "name": "Vega20[VII]",
+    "name": "VII",
     "hashrate": 101780000,
     "fan_speed": 97,
     "core_temp": 52,
@@ -59,7 +60,7 @@ $ env GOOS={your-os} GOARCH={your-arch} go build
 
 ## Run
 ```
-$ miner-exporter --miner-type={gminer/trex/teamredminer} --miner-host={your-miner-host} --miner-protocol={http/https/tcp} --miner-port={your-miner-port} --listen-port={port-to-listen} --output-format={json/prometheus}
+$ miner-exporter --miner-type={gminer/trex/teamredminer/nbminer} --miner-host={your-miner-host} --miner-protocol={http/https/tcp} --miner-port={your-miner-port} --listen-port={port-to-listen} --output-format={json/prometheus}
 ```
 
 ## Contribution

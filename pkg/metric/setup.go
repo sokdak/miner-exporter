@@ -9,6 +9,7 @@ import (
 	cgminer "github.com/sokdak/go-teamredminer-api"
 	"github.com/sokdak/miner-exporter/pkg/common"
 	"github.com/sokdak/miner-exporter/pkg/gminer"
+	"github.com/sokdak/miner-exporter/pkg/nbminer"
 	"github.com/sokdak/miner-exporter/pkg/teamredminer"
 	"github.com/sokdak/miner-exporter/pkg/trex"
 	"go.uber.org/zap"
@@ -65,6 +66,14 @@ func SetMinerInstanceOrDie(minerType string, protocol string, host string, port 
 			Log:            log.WithName("teamredminer"),
 			ConnectionInfo: connInfo,
 			Client:         cgminer.NewCGMiner(connInfo.Host, connInfo.Port, ScrapeTimeout),
+		}
+	case common.MinerTypeNbMiner:
+		miner = nbminer.Client{
+			Log:            log.WithName("nbminer"),
+			ConnectionInfo: connInfo,
+			HttpClient: http.Client{
+				Timeout: ScrapeTimeout,
+			},
 		}
 	default:
 		logInit.WithValues("miner-type", minerType,

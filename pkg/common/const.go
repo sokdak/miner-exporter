@@ -6,6 +6,7 @@ const (
 	MinerTypeGMiner       = "gminer"
 	MinerTypeTeamRedMiner = "teamredminer"
 	MinerTypeTrexMiner    = "trex"
+	MinerTypeNbMiner      = "nbminer"
 
 	InitRetryBackoff   = 30 * time.Second
 	InitRetryThreshold = 120
