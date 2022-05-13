@@ -61,7 +61,7 @@ func (c Client) Parse(value interface{}) (*dto.Status, error) {
 					Hashrate:         dev.Speed,
 					FanSpeed:         dev.Fan,
 					CoreTemp:         dev.Temperature,
-					MemoryTemp:       dev.MemoryTemperature,
+					MemoryTemp:       common.GetNonValueInsteadIfNotPresent(dev.MemoryTemperature),
 					PowerConsumption: dev.PowerUsage,
 					ShareAccepted:    dev.AcceptedShares,
 					ShareRejected:    dev.RejectedShares,
