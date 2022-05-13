@@ -4,7 +4,17 @@ import (
 	"fmt"
 	"github.com/go-logr/logr"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/sokdak/miner-exporter/pkg/common"
 	"github.com/sokdak/miner-exporter/pkg/dto"
+)
+
+const (
+	keyMemTemp   = "memTemp"
+	keyLhrTune   = "lhrTune"
+	keyCoreClock = "coreClock"
+	keyMemClock  = "memClock"
+	keyCoreUtil  = "coreUtil"
+	keyMemUtil   = "memUtil"
 )
 
 const (
@@ -38,8 +48,9 @@ type MinerCollector struct {
 	up                                prometheus.Gauge
 	totalScrapes, fetchOrParseFailure prometheus.Counter
 
-	metricsGpu   []*GpuMetric
-	metricsMiner []*MinerMetric
+	metricsGpu     []*GpuMetric
+	metricsGpuMisc map[string]*GpuMetric
+	metricsMiner   []*MinerMetric
 }
 
 func NewMinerMetric(log logr.Logger) *MinerCollector {
@@ -77,17 +88,6 @@ func NewMinerMetric(log logr.Logger) *MinerCollector {
 					defaultMinerGpuMetricLabels, nil),
 				Value: func(m *dto.Status, id int) float64 {
 					return float64(m.Devices[id].CoreTemp)
-				},
-				Labels: defaultMinerGpuMetricLabelValueGenerator,
-			},
-			{
-				Type: prometheus.GaugeValue,
-				Desc: prometheus.NewDesc(
-					prometheus.BuildFQName(namespace, subsystemForGpu, "memtemp"),
-					"memory temp",
-					defaultMinerGpuMetricLabels, nil),
-				Value: func(m *dto.Status, id int) float64 {
-					return float64(m.Devices[id].MemoryTemp)
 				},
 				Labels: defaultMinerGpuMetricLabelValueGenerator,
 			},
@@ -146,17 +146,71 @@ func NewMinerMetric(log logr.Logger) *MinerCollector {
 				},
 				Labels: defaultMinerGpuMetricLabelValueGenerator,
 			},
-			{
+		},
+		metricsGpuMisc: map[string]*GpuMetric{
+			keyMemTemp: {
+				Type: prometheus.GaugeValue,
+				Desc: prometheus.NewDesc(
+					prometheus.BuildFQName(namespace, subsystemForGpu, "memtemp"),
+					"memory temp",
+					defaultMinerGpuMetricLabels, nil),
+				Value: func(m *dto.Status, id int) float64 {
+					return float64(m.Devices[id].MemoryTemp)
+				},
+				Labels: defaultMinerGpuMetricLabelValueGenerator,
+			},
+			keyLhrTune: {
 				Type: prometheus.GaugeValue,
 				Desc: prometheus.NewDesc(
 					prometheus.BuildFQName(namespace, subsystemForGpu, "lhr_tune"),
 					"lhr tune",
 					defaultMinerGpuMetricLabels, nil),
 				Value: func(m *dto.Status, id int) float64 {
-					if m.Devices[id].LhrRate != 0 {
-						return float64(m.Devices[id].LhrRate)
-					}
-					return -1
+					return float64(m.Devices[id].LhrRate)
+				},
+				Labels: defaultMinerGpuMetricLabelValueGenerator,
+			},
+			keyCoreClock: {
+				Type: prometheus.GaugeValue,
+				Desc: prometheus.NewDesc(
+					prometheus.BuildFQName(namespace, subsystemForGpu, "core_clock"),
+					"core clock",
+					defaultMinerGpuMetricLabels, nil),
+				Value: func(m *dto.Status, id int) float64 {
+					return float64(m.Devices[id].CoreClock)
+				},
+				Labels: defaultMinerGpuMetricLabelValueGenerator,
+			},
+			keyMemClock: {
+				Type: prometheus.GaugeValue,
+				Desc: prometheus.NewDesc(
+					prometheus.BuildFQName(namespace, subsystemForGpu, "mem_clock"),
+					"memory clock",
+					defaultMinerGpuMetricLabels, nil),
+				Value: func(m *dto.Status, id int) float64 {
+					return float64(m.Devices[id].MemoryClock)
+				},
+				Labels: defaultMinerGpuMetricLabelValueGenerator,
+			},
+			keyCoreUtil: {
+				Type: prometheus.GaugeValue,
+				Desc: prometheus.NewDesc(
+					prometheus.BuildFQName(namespace, subsystemForGpu, "core_util"),
+					"core util",
+					defaultMinerGpuMetricLabels, nil),
+				Value: func(m *dto.Status, id int) float64 {
+					return float64(m.Devices[id].CoreUtilization)
+				},
+				Labels: defaultMinerGpuMetricLabelValueGenerator,
+			},
+			keyMemUtil: {
+				Type: prometheus.GaugeValue,
+				Desc: prometheus.NewDesc(
+					prometheus.BuildFQName(namespace, subsystemForGpu, "mem_util"),
+					"memory util",
+					defaultMinerGpuMetricLabels, nil),
+				Value: func(m *dto.Status, id int) float64 {
+					return float64(m.Devices[id].MemUtilization)
 				},
 				Labels: defaultMinerGpuMetricLabelValueGenerator,
 			},
@@ -221,18 +275,78 @@ func (c *MinerCollector) Collect(ch chan<- prometheus.Metric) {
 			metric.Labels(status)...)
 	}
 
-	// set gpu metrics
-	for _, metric := range c.metricsGpu {
-		for i := range status.Devices {
+	for i := range status.Devices {
+		// set gpu basic metrics
+		for _, metric := range c.metricsGpu {
 			ch <- prometheus.MustNewConstMetric(
 				metric.Desc,
 				metric.Type,
 				metric.Value(status, i),
 				metric.Labels(status, i)...)
 		}
+
+		// set gpu mem temp metrics
+		if status.Devices[i].MemoryTemp != common.ValueNotSet {
+			m := c.metricsGpuMisc[keyMemTemp]
+			ch <- prometheus.MustNewConstMetric(
+				m.Desc,
+				m.Type,
+				m.Value(status, i),
+				m.Labels(status, i)...)
+		}
+
+		// set lhr rate metrics
+		if status.Devices[i].LhrRate != common.ValueNotSet {
+			m := c.metricsGpuMisc[keyMemUtil]
+			ch <- prometheus.MustNewConstMetric(
+				m.Desc,
+				m.Type,
+				m.Value(status, i),
+				m.Labels(status, i)...)
+		}
+
+		// set gpu clock metrics
+		if status.Devices[i].CoreClock != common.ValueNotSet {
+			m := c.metricsGpuMisc[keyCoreClock]
+			ch <- prometheus.MustNewConstMetric(
+				m.Desc,
+				m.Type,
+				m.Value(status, i),
+				m.Labels(status, i)...)
+		}
+
+		// set mem clock metrics
+		if status.Devices[i].MemoryClock != common.ValueNotSet {
+			m := c.metricsGpuMisc[keyMemClock]
+			ch <- prometheus.MustNewConstMetric(
+				m.Desc,
+				m.Type,
+				m.Value(status, i),
+				m.Labels(status, i)...)
+		}
+
+		// set gpu util metrics
+		if status.Devices[i].CoreUtilization != common.ValueNotSet {
+			m := c.metricsGpuMisc[keyCoreUtil]
+			ch <- prometheus.MustNewConstMetric(
+				m.Desc,
+				m.Type,
+				m.Value(status, i),
+				m.Labels(status, i)...)
+		}
+
+		// set mem util metrics
+		if status.Devices[i].MemUtilization != common.ValueNotSet {
+			m := c.metricsGpuMisc[keyMemUtil]
+			ch <- prometheus.MustNewConstMetric(
+				m.Desc,
+				m.Type,
+				m.Value(status, i),
+				m.Labels(status, i)...)
+		}
 	}
 
-	c.logger.Info("collect completed", "gpu-metric-count", len(c.metricsGpu), "miner-metric-count", len(c.metricsMiner))
+	c.logger.Info("collect completed", "gpu-metric-count", len(c.metricsGpu), "miner-metric-count", len(c.metricsMiner), "gpu-misc-metric-count", len(c.metricsGpuMisc))
 }
 
 func (c *MinerCollector) Describe(ch chan<- *prometheus.Desc) {

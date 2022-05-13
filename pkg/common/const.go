@@ -11,3 +11,7 @@ const (
 	InitRetryBackoff   = 30 * time.Second
 	InitRetryThreshold = 120
 )
+
+const (
+	ValueNotSet = -1
+)

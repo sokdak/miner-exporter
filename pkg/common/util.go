@@ -47,3 +47,10 @@ func ExtractWorkerNameFromAddress(source string) string {
 	}
 	return strings.ToUpper(strings.Join(strs[1:], "."))
 }
+
+func GetNonValueInsteadIfNotPresent(value int) int {
+	if value == -1 || value == 0 {
+		return ValueNotSet
+	}
+	return value
+}

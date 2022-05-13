@@ -66,6 +66,11 @@ func (c Client) Parse(value interface{}) (*dto.Status, error) {
 					ShareAccepted:    dev.AcceptedShares,
 					ShareRejected:    dev.RejectedShares,
 					ShareStale:       dev.StaleShares,
+					LhrRate:          common.ValueNotSet,
+					CoreClock:        common.ValueNotSet,
+					MemoryClock:      common.ValueNotSet,
+					CoreUtilization:  common.ValueNotSet,
+					MemUtilization:   common.ValueNotSet,
 				})
 			}
 			return devices

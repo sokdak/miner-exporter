@@ -65,7 +65,11 @@ func (c Client) Parse(value interface{}) (*dto.Status, error) {
 					ShareAccepted:    dev.Shares.AcceptedCount,
 					ShareRejected:    dev.Shares.RejectedCount,
 					ShareStale:       dev.Shares.InvalidCount,
-					LhrRate:          dev.LhrTune,
+					LhrRate:          float32(common.GetNonValueInsteadIfNotPresent(int(dev.LhrTune))),
+					CoreClock:        common.ValueNotSet,
+					MemoryClock:      common.ValueNotSet,
+					CoreUtilization:  common.ValueNotSet,
+					MemUtilization:   common.ValueNotSet,
 				})
 			}
 			return devs
