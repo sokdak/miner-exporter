@@ -1,6 +1,8 @@
 package common
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"strings"
 )
@@ -53,4 +55,12 @@ func GetNonValueInsteadIfNotPresent(value int) int {
 		return ValueNotSet
 	}
 	return value
+}
+
+func DeepCopy(src, dist interface{}) (err error) {
+	buf := bytes.Buffer{}
+	if err = gob.NewEncoder(&buf).Encode(src); err != nil {
+		return
+	}
+	return gob.NewDecoder(&buf).Decode(dist)
 }

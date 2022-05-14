@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/sokdak/miner-exporter/pkg/common"
 	"github.com/sokdak/miner-exporter/pkg/metric"
+	"github.com/sokdak/miner-exporter/pkg/smi"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,12 +15,13 @@ import (
 
 func main() {
 	var minerPort, listenPort int
-	var minerType, host, protocol, format string
+	var minerType, host, protocol, format, smiValueOverride string
 
 	flag.StringVar(&minerType, "miner-type", "gminer", "Type of miner")
 	flag.StringVar(&host, "miner-host", "localhost", "host for export miner metric")
 	flag.StringVar(&protocol, "miner-protocol", "http", "protocol for export miner metric")
 	flag.StringVar(&format, "output-format", "json", "output format")
+	flag.StringVar(&smiValueOverride, "smi-override-strategy", "empty", "strategy for how to override smi-gathered value")
 	flag.IntVar(&minerPort, "miner-port", 8080, "Port for that retrieve status from miner")
 	flag.IntVar(&listenPort, "listen-port", 12000, "port for serving metric")
 	flag.Parse()
@@ -43,6 +45,9 @@ func main() {
 		glog.Error(err, "failed get miner instance, exit miner.")
 		os.Exit(1)
 	}
+
+	metric.UserSetOverrideStrategy = metric.StatusOverrideStrategy(smiValueOverride)
+	smi.NewGathererManagerAndInit(log.WithName("device-gatherer"))
 
 	metric.SetLoggerForMetricHandler(glog)
 
@@ -79,4 +84,5 @@ func main() {
 	defer srvCancel()
 
 	_ = server.Shutdown(srvCtx)
+	smi.GlobalGathererManager.Teardown()
 }
