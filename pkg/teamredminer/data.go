@@ -84,7 +84,7 @@ func (c Client) Parse(value interface{}) (*dto.Status, error) {
 					LhrRate:          common.ValueNotSet,
 					CoreClock:        common.GetNonValueInsteadIfNotPresent(int(dev.GPUClock)),
 					MemoryClock:      common.GetNonValueInsteadIfNotPresent(int(dev.MemoryClock)),
-					CoreUtilization:  common.GetNonValueInsteadIfNotPresent(int(dev.Utility * 100)),
+					CoreUtilization:  float32(common.GetNonValueInsteadIfNotPresent(int(dev.Utility * 100))),
 					MemUtilization:   common.ValueNotSet,
 				})
 			}

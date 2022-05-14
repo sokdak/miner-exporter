@@ -14,6 +14,6 @@ type Device struct {
 	LhrRate          float32 `json:"lhr_rate"`
 	CoreClock        int     `json:"core_clock"`
 	MemoryClock      int     `json:"memory_clock"`
-	CoreUtilization  int     `json:"core_utilization"`
-	MemUtilization   int     `json:"mem_utilization"`
+	CoreUtilization  float32 `json:"core_utilization"`
+	MemUtilization   float32 `json:"mem_utilization"`
 }

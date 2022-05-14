@@ -18,7 +18,7 @@ type Stratum struct {
 
 type Device struct {
 	CoreClock       int     `json:"core_clock"`
-	CoreUtilization int     `json:"core_utilization"`
+	CoreUtilization float32 `json:"core_utilization"`
 	Fan             int     `json:"fan"`
 	HashrateRaw     float64 `json:"hashrate_raw"`
 	Id              int     `json:"id"`
@@ -26,7 +26,7 @@ type Device struct {
 	Temperature     int     `json:"temperature"`
 	MemTemperature  int     `json:"memTemperature"`
 	MemClock        int     `json:"mem_clock"`
-	MemUtilization  int     `json:"mem_utilization"`
+	MemUtilization  float32 `json:"mem_utilization"`
 	PciBusId        int     `json:"pci_bus_id"`
 	Power           int     `json:"power"`
 	AcceptedShares  int     `json:"accepted_shares"`
