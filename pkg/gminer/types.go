@@ -11,6 +11,8 @@ type Device struct {
 	Fan               int    `json:"fan"`
 	Temperature       int    `json:"temperature"`
 	MemoryTemperature int    `json:"memory_temperature"`
+	CoreClock         int    `json:"core_clock,omitempty"`
+	MemoryClock       int    `json:"memory_clock,omitempty"`
 	PowerUsage        int    `json:"power_usage"`
 }
 
